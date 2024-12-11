@@ -59,6 +59,12 @@ import {
   TCertificateTemplates,
   TCertificateTemplatesInsert,
   TCertificateTemplatesUpdate,
+  TConsumerCredentials,
+  TConsumerCredentialsInsert,
+  TConsumerCredentialsUpdate,
+  TCreditCardConsumerCredentials,
+  TCreditCardConsumerCredentialsInsert,
+  TCreditCardConsumerCredentialsUpdate,
   TDynamicSecretLeases,
   TDynamicSecretLeasesInsert,
   TDynamicSecretLeasesUpdate,
@@ -338,6 +344,9 @@ import {
   TWebhooks,
   TWebhooksInsert,
   TWebhooksUpdate,
+  TWebLoginConsumerCredentials,
+  TWebLoginConsumerCredentialsInsert,
+  TWebLoginConsumerCredentialsUpdate,
   TWorkflowIntegrations,
   TWorkflowIntegrationsInsert,
   TWorkflowIntegrationsUpdate
@@ -830,5 +839,20 @@ declare module "knex/types/tables" {
       TProjectTemplatesUpdate
     >;
     [TableName.TotpConfig]: KnexOriginal.CompositeTableType<TTotpConfigs, TTotpConfigsInsert, TTotpConfigsUpdate>;
+    [TableName.ConsumerCredentials]: KnexOriginal.CompositeTableType<
+      TConsumerCredentials,
+      TConsumerCredentialsInsert,
+      TConsumerCredentialsUpdate
+    >;
+    [TableName.CreditCardConsumerCredentials]: KnexOriginal.CompositeTableType<
+      TCreditCardConsumerCredentials,
+      TCreditCardConsumerCredentialsInsert,
+      TCreditCardConsumerCredentialsUpdate
+    >;
+    [TableName.WebLoginConsumerCredentials]: KnexOriginal.CompositeTableType<
+      TWebLoginConsumerCredentials,
+      TWebLoginConsumerCredentialsInsert,
+      TWebLoginConsumerCredentialsUpdate
+    >;
   }
 }

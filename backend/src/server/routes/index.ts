@@ -102,6 +102,8 @@ import { certificateTemplateDALFactory } from "@app/services/certificate-templat
 import { certificateTemplateEstConfigDALFactory } from "@app/services/certificate-template/certificate-template-est-config-dal";
 import { certificateTemplateServiceFactory } from "@app/services/certificate-template/certificate-template-service";
 import { cmekServiceFactory } from "@app/services/cmek/cmek-service";
+import { consumerCredentialsDALFactory } from "@app/services/consumer-credentials/consumer-credentials-dal";
+import { consumerCredentialsServiceFactory } from "@app/services/consumer-credentials/consumer-credentials-service";
 import { externalGroupOrgRoleMappingDALFactory } from "@app/services/external-group-org-role-mapping/external-group-org-role-mapping-dal";
 import { externalGroupOrgRoleMappingServiceFactory } from "@app/services/external-group-org-role-mapping/external-group-org-role-mapping-service";
 import { externalMigrationQueueFactory } from "@app/services/external-migration/external-migration-queue";
@@ -355,6 +357,8 @@ export const registerRoutes = async (
   const externalGroupOrgRoleMappingDAL = externalGroupOrgRoleMappingDALFactory(db);
 
   const projectTemplateDAL = projectTemplateDALFactory(db);
+
+  const consumerCredentialsDAL = consumerCredentialsDALFactory(db);
 
   const permissionService = permissionServiceFactory({
     permissionDAL,
@@ -1292,6 +1296,12 @@ export const registerRoutes = async (
     externalGroupOrgRoleMappingDAL
   });
 
+  const consumerCredentialsService = consumerCredentialsServiceFactory({
+    consumerCredentialsDAL,
+    kmsService,
+    permissionService
+  });
+
   await superAdminService.initServerCfg();
 
   // setup the communication with license key server
@@ -1385,7 +1395,8 @@ export const registerRoutes = async (
     migration: migrationService,
     externalGroupOrgRoleMapping: externalGroupOrgRoleMappingService,
     projectTemplate: projectTemplateService,
-    totp: totpService
+    totp: totpService,
+    consumerCredentials: consumerCredentialsService
   });
 
   const cronJobs: CronJob[] = [];

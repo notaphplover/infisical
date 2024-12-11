@@ -1468,3 +1468,10 @@ export const ProjectTemplates = {
     templateId: "The ID of the project template to be deleted."
   }
 };
+
+export const CONSUMER_CREDENTIALS = {
+  LIST: {
+    limit: "The number of consumer crentials to return.",
+    offset: "The offset to start from. If you enter 10, it will start from the 10th consumer crentials."
+  }
+} as const;
