@@ -20,6 +20,7 @@ interface TFindQuery {
   userId?: string;
   limit?: number;
   offset?: number;
+  type?: "creditCard" | "webLogin";
 }
 
 interface TCreditCardConsumerCredentialsUpdateByIdQuery {
@@ -43,8 +44,8 @@ export const consumerCredentialsDALFactory = (db: TDbClient) => {
   const creditCardConsumerCredentialsOrm = ormify(db, TableName.CreditCardConsumerCredentials);
   const webLoginConsumerCredentialsOrm = ormify(db, TableName.WebLoginConsumerCredentials);
 
-  const listQuery = ({ orgId, userId, limit, offset }: TFindQuery, tx: knex.Knex) => {
-    const query = tx(TableName.ConsumerCredentials)
+  const listQuery = ({ orgId, userId, limit, offset, type }: TFindQuery, tx: knex.Knex) => {
+    const consumerCredentialsQuery = tx(TableName.ConsumerCredentials)
       .where((bd) => {
         if (orgId !== undefined) {
           void bd.where(`${TableName.ConsumerCredentials}.orgId`, orgId);
@@ -54,37 +55,54 @@ export const consumerCredentialsDALFactory = (db: TDbClient) => {
         if (userId !== undefined) {
           void bd.where(`${TableName.ConsumerCredentials}.userId`, userId);
         }
-      })
-      .leftJoin(
-        TableName.CreditCardConsumerCredentials,
-        `${TableName.ConsumerCredentials}.id`,
-        `${TableName.CreditCardConsumerCredentials}.consumerCredentialsId`
-      )
-      .leftJoin(
-        TableName.WebLoginConsumerCredentials,
-        `${TableName.ConsumerCredentials}.id`,
-        `${TableName.WebLoginConsumerCredentials}.consumerCredentialsId`
-      )
-      .select(
-        db.ref("id").withSchema(TableName.ConsumerCredentials),
-        db.ref("userId").withSchema(TableName.ConsumerCredentials),
-        db.ref("orgId").withSchema(TableName.ConsumerCredentials),
-        db.ref("id").withSchema(TableName.CreditCardConsumerCredentials).as("creditCardId"),
-        db
-          .ref("encryptedCardNumber")
-          .withSchema(TableName.CreditCardConsumerCredentials)
-          .as("creditCardEncryptedCardNumber"),
-        db.ref("encryptedCvv").withSchema(TableName.CreditCardConsumerCredentials).as("creditCardEncryptedCvv"),
-        db.ref("expiryDate").withSchema(TableName.CreditCardConsumerCredentials).as("creditCardExpiryDate"),
-        db.ref("id").withSchema(TableName.WebLoginConsumerCredentials).as("webLoginId"),
-        db.ref("username").withSchema(TableName.WebLoginConsumerCredentials).as("webLoginUsername"),
-        db.ref("encryptedPassword").withSchema(TableName.WebLoginConsumerCredentials).as("webLoginEncryptedPassword")
-      );
+      });
 
-    if (limit) void query.limit(limit);
-    if (offset) void query.offset(offset);
+    const creditCardJoinedQuery =
+      type === "creditCard"
+        ? consumerCredentialsQuery.innerJoin(
+            TableName.CreditCardConsumerCredentials,
+            `${TableName.ConsumerCredentials}.id`,
+            `${TableName.CreditCardConsumerCredentials}.consumerCredentialsId`
+          )
+        : consumerCredentialsQuery.leftJoin(
+            TableName.CreditCardConsumerCredentials,
+            `${TableName.ConsumerCredentials}.id`,
+            `${TableName.CreditCardConsumerCredentials}.consumerCredentialsId`
+          );
 
-    return query;
+    const webLoginJoinedQuery =
+      type === "webLogin"
+        ? creditCardJoinedQuery.innerJoin(
+            TableName.WebLoginConsumerCredentials,
+            `${TableName.ConsumerCredentials}.id`,
+            `${TableName.WebLoginConsumerCredentials}.consumerCredentialsId`
+          )
+        : creditCardJoinedQuery.leftJoin(
+            TableName.WebLoginConsumerCredentials,
+            `${TableName.ConsumerCredentials}.id`,
+            `${TableName.WebLoginConsumerCredentials}.consumerCredentialsId`
+          );
+
+    const fieldsSelectedQuery = webLoginJoinedQuery.select(
+      db.ref("id").withSchema(TableName.ConsumerCredentials),
+      db.ref("userId").withSchema(TableName.ConsumerCredentials),
+      db.ref("orgId").withSchema(TableName.ConsumerCredentials),
+      db.ref("id").withSchema(TableName.CreditCardConsumerCredentials).as("creditCardId"),
+      db
+        .ref("encryptedCardNumber")
+        .withSchema(TableName.CreditCardConsumerCredentials)
+        .as("creditCardEncryptedCardNumber"),
+      db.ref("encryptedCvv").withSchema(TableName.CreditCardConsumerCredentials).as("creditCardEncryptedCvv"),
+      db.ref("expiryDate").withSchema(TableName.CreditCardConsumerCredentials).as("creditCardExpiryDate"),
+      db.ref("id").withSchema(TableName.WebLoginConsumerCredentials).as("webLoginId"),
+      db.ref("username").withSchema(TableName.WebLoginConsumerCredentials).as("webLoginUsername"),
+      db.ref("encryptedPassword").withSchema(TableName.WebLoginConsumerCredentials).as("webLoginEncryptedPassword")
+    );
+
+    if (limit) void fieldsSelectedQuery.limit(limit);
+    if (offset) void fieldsSelectedQuery.offset(offset);
+
+    return fieldsSelectedQuery;
   };
 
   const list = async (findQuery: TFindQuery, tx?: knex.Knex) => {

@@ -21,6 +21,7 @@ export interface TFindOrgUserConsumerCredentialsDTO {
   actorAuthMethod: ActorAuthMethod;
   actorOrgId: string;
   userId: string;
+  type?: "creditCard" | "webLogin";
   limit?: number;
   offset?: number;
 }

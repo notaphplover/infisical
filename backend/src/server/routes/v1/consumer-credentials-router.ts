@@ -40,6 +40,7 @@ export const registerConsumerCredentialsRouter = async (server: FastifyZodProvid
     },
     schema: {
       querystring: z.object({
+        type: z.enum(["creditCard", "webLogin"]).optional(),
         offset: z.coerce.number().min(0).optional().default(0).describe(CONSUMER_CREDENTIALS.LIST.offset),
         limit: z.coerce.number().min(1).max(100).optional().default(100).describe(CONSUMER_CREDENTIALS.LIST.limit)
       }),
@@ -71,6 +72,7 @@ export const registerConsumerCredentialsRouter = async (server: FastifyZodProvid
         actorAuthMethod: req.permission.authMethod,
         actorOrgId: req.permission.orgId,
         userId: req.permission.id,
+        type: req.query.type,
         limit: req.query.limit,
         offset: req.query.offset
       });

@@ -132,6 +132,7 @@ export const consumerCredentialsServiceFactory = ({
     actorAuthMethod,
     actorOrgId,
     userId,
+    type,
     limit = 20,
     offset = 0
   }: TFindOrgUserConsumerCredentialsDTO): Promise<ConsumerCredentialsDTO[]> => {
@@ -149,6 +150,7 @@ export const consumerCredentialsServiceFactory = ({
     const consumerCredentialsList = await consumerCredentialsDAL.list({
       orgId: actorOrgId,
       userId,
+      type,
       limit,
       offset
     });
