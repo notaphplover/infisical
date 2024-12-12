@@ -122,7 +122,11 @@ export enum TableName {
   KmsKeyVersion = "kms_key_versions",
   WorkflowIntegrations = "workflow_integrations",
   SlackIntegrations = "slack_integrations",
-  ProjectSlackConfigs = "project_slack_configs"
+  ProjectSlackConfigs = "project_slack_configs",
+  // Consumer credentials feature
+  ConsumerCredentials = "consumer_credentials",
+  CreditCardConsumerCredentials = "credit_card_consumer_credentials",
+  WebLoginConsumerCredentials = "web_login_consumer_credentials"
 }
 
 export type TImmutableDBKeys = "id" | "createdAt" | "updatedAt";
