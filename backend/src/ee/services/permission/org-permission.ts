@@ -27,7 +27,8 @@ export enum OrgPermissionSubjects {
   Kms = "kms",
   AdminConsole = "organization-admin-console",
   AuditLogs = "audit-logs",
-  ProjectTemplates = "project-templates"
+  ProjectTemplates = "project-templates",
+  ConsumerCredentials = "consumer-credentials"
 }
 
 export type OrgPermissionSet =
@@ -46,7 +47,8 @@ export type OrgPermissionSet =
   | [OrgPermissionActions, OrgPermissionSubjects.Kms]
   | [OrgPermissionActions, OrgPermissionSubjects.AuditLogs]
   | [OrgPermissionActions, OrgPermissionSubjects.ProjectTemplates]
-  | [OrgPermissionAdminConsoleAction, OrgPermissionSubjects.AdminConsole];
+  | [OrgPermissionAdminConsoleAction, OrgPermissionSubjects.AdminConsole]
+  | [OrgPermissionActions, OrgPermissionSubjects.ConsumerCredentials];
 
 const buildAdminPermission = () => {
   const { can, rules } = new AbilityBuilder<MongoAbility<OrgPermissionSet>>(createMongoAbility);
@@ -125,6 +127,11 @@ const buildAdminPermission = () => {
 
   can(OrgPermissionAdminConsoleAction.AccessAllProjects, OrgPermissionSubjects.AdminConsole);
 
+  can(OrgPermissionActions.Read, OrgPermissionSubjects.ConsumerCredentials);
+  can(OrgPermissionActions.Create, OrgPermissionSubjects.ConsumerCredentials);
+  can(OrgPermissionActions.Edit, OrgPermissionSubjects.ConsumerCredentials);
+  can(OrgPermissionActions.Delete, OrgPermissionSubjects.ConsumerCredentials);
+
   return rules;
 };
 
@@ -152,6 +159,11 @@ const buildMemberPermission = () => {
   can(OrgPermissionActions.Delete, OrgPermissionSubjects.Identity);
 
   can(OrgPermissionActions.Read, OrgPermissionSubjects.AuditLogs);
+
+  can(OrgPermissionActions.Read, OrgPermissionSubjects.ConsumerCredentials);
+  can(OrgPermissionActions.Create, OrgPermissionSubjects.ConsumerCredentials);
+  can(OrgPermissionActions.Edit, OrgPermissionSubjects.ConsumerCredentials);
+  can(OrgPermissionActions.Delete, OrgPermissionSubjects.ConsumerCredentials);
 
   return rules;
 };
